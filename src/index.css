@@ -1,0 +1,272 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --apple-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", sans-serif;
+  --app-bg: #f5f5f7;
+  --app-surface: #ffffff;
+  --app-surface-soft: #f5f5f7;
+  --app-text: #1d1d1f;
+  --app-muted: #6e6e73;
+  --app-subtle: #86868b;
+  --app-hairline: rgba(0, 0, 0, 0.1);
+  --app-accent: #0071e3;
+  --app-accent-hover: #0077ed;
+  --app-accent-soft: #e8f3ff;
+  --app-accent-text: #0066cc;
+}
+
+html {
+  background: var(--app-bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: var(--apple-font-family);
+  letter-spacing: 0;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  font-family: var(--apple-font-family);
+}
+
+button,
+a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--app-accent) 18%, transparent);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--app-accent) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.apple-eyebrow {
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--app-accent-text);
+}
+
+.coms-card {
+  border: 1px solid var(--app-hairline);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--app-surface) 92%, transparent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.coms-button-primary,
+.coms-button-ghost,
+.coms-nav-link,
+.coms-icon-button,
+.tier-place-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 800;
+  transition: transform 160ms ease, background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.coms-button-primary {
+  min-height: 2.5rem;
+  border: 1px solid var(--app-accent);
+  background: var(--app-accent);
+  padding: 0.55rem 1rem;
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(0, 113, 227, 0.18);
+}
+
+.coms-button-primary:hover {
+  background: var(--app-accent-hover);
+  transform: translateY(-1px);
+}
+
+.coms-button-primary:disabled,
+.coms-button-ghost:disabled,
+.coms-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.coms-button-ghost,
+.tier-place-button {
+  min-height: 2.5rem;
+  border: 1px solid var(--app-hairline);
+  background: var(--app-surface);
+  padding: 0.55rem 1rem;
+  color: var(--app-text);
+}
+
+.coms-button-ghost:hover,
+.tier-place-button:hover {
+  background: var(--app-surface-soft);
+}
+
+.coms-nav-link {
+  min-height: 2.25rem;
+  padding: 0.4rem 0.8rem;
+  color: var(--app-muted);
+}
+
+.coms-nav-link:hover,
+.coms-nav-link-active {
+  background: color-mix(in srgb, var(--app-accent) 9%, transparent);
+  color: var(--app-accent-text);
+}
+
+.coms-icon-button {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  border: 1px solid var(--app-hairline);
+  background: var(--app-surface);
+  color: var(--app-muted);
+}
+
+.coms-input {
+  min-height: 2.75rem;
+  width: 100%;
+  border: 1px solid var(--app-hairline);
+  border-radius: 8px;
+  background: var(--app-surface);
+  padding: 0 1rem;
+  color: var(--app-text);
+  font-size: 0.95rem;
+  font-weight: 650;
+  outline: none;
+  transition: box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.coms-input:focus {
+  border-color: color-mix(in srgb, var(--app-accent) 42%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--app-accent) 18%, transparent);
+}
+
+.mini-tier-board {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.mini-tier-row {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mini-tier-row span {
+  display: grid;
+  min-height: 2.5rem;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--app-accent);
+  color: #fff;
+  font-weight: 950;
+}
+
+.mini-tier-row i {
+  height: 2.5rem;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--app-accent-soft), #fff);
+  box-shadow: inset 3px 0 0 var(--app-accent);
+}
+
+.tier-row {
+  display: grid;
+  min-height: 6rem;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--app-hairline);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.tier-row-over {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--app-accent) 16%, transparent);
+}
+
+.tier-row-label {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 950;
+}
+
+.tier-item-card {
+  display: inline-flex;
+  max-width: 18rem;
+  min-width: min(100%, 14rem);
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--app-hairline);
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.65rem;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+
+.tier-item-card:hover,
+.tier-item-card-selected {
+  border-color: color-mix(in srgb, var(--app-accent) 38%, transparent);
+  box-shadow: 0 10px 30px rgba(0, 113, 227, 0.14);
+}
+
+.tier-result-chip {
+  max-width: 18rem;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--app-hairline);
+  border-radius: 9999px;
+  background: #fff;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.875rem;
+  font-weight: 850;
+  color: var(--app-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .tier-row {
+    grid-template-columns: 3.75rem minmax(0, 1fr);
+  }
+
+  .tier-item-card {
+    width: 100%;
+    max-width: none;
+  }
+
+  .coms-nav-link {
+    padding-inline: 0.65rem;
+  }
+}
