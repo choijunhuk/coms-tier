@@ -6,10 +6,13 @@ COMS 동아리 내부에서 여러 주제를 등급별로 나눠보고 공유할
 
 ## 주요 기능
 
-- 티어표 만들기: 제목, 설명, 카테고리, 티어 행 이름/색상/설명, 항목 이름/설명/이미지 URL/태그 입력
+- 티어표 만들기: 제목, 설명, 카테고리, 티어 행 이름/색상/설명, 항목 이름/설명/이미지/GIF/YouTube URL/태그 입력
 - 샘플 티어표: 개발 언어, 프레임워크, 야식 메뉴, 에러 메시지, COMS 활동, COMS 프로젝트
 - 편집: 미배치 항목, 티어 행, PC 드래그 앤 드롭, 모바일 터치 후 티어 선택, 미배치로 되돌리기, 초기화, 결과 저장
-- 결과: 완성된 티어표, 공유 텍스트, 결과 복사, 다시 수정하기, 새로 만들기
+- 결과: 완성된 티어표, 공유 텍스트, 공유 링크 생성, 다시 수정하기, 새로 만들기
+- COMS 계정 저장: 로그인 상태에서는 만든 티어표와 결과를 내 프로필 저장소에 저장
+- 공유 모음: 공유한 티어표와 결과를 `/tier/shared/:slug` 링크와 메인 공유 목록에서 조회
+- 미디어: 이미지 파일 업로드, GIF 파일 업로드, 이미지/GIF URL, YouTube 링크 미리보기 지원
 - 통계: localStorage 기반 S 티어 배치 횟수, A 티어 배치 횟수, 평균 티어 점수, 가장 많이 배치된 티어
 
 ## 기술 스택
@@ -19,6 +22,7 @@ COMS 동아리 내부에서 여러 주제를 등급별로 나눠보고 공유할
 - React Router
 - localStorage 저장
 - `@dnd-kit/core` 기반 드래그 앤 드롭
+- COMS 웹사이트 API 연동: `/api/auth/me`, `/api/files`, `/api/mini-apps/tier/*`
 - Vitest 기반 엔진 테스트
 - 정적 파일 배포
 
@@ -41,6 +45,27 @@ npm run build
 npm test
 npm run typecheck
 ```
+
+## COMS 계정 저장과 공유
+
+이 앱은 프론트 단독으로도 동작하지만, `coms-website` 백엔드가 함께 배포되어 있으면 같은 도메인의 COMS 로그인 세션을 사용합니다.
+
+- 로그인 사용자 확인: `GET /api/auth/me`
+- 내 프로필 저장: `PUT /api/mini-apps/tier/profile/{template|result}/{id}`
+- 내 저장 목록: `GET /api/mini-apps/tier/profile`
+- 공유 발행: `POST /api/mini-apps/tier/profile/{template|result}/{id}/share`
+- 공유 목록: `GET /api/mini-apps/tier/shared`
+- 공유 상세: `GET /api/mini-apps/tier/shared/{slug}`
+- 이미지/GIF 업로드: `POST /api/files`
+
+로그인하지 않았거나 API를 사용할 수 없는 환경에서는 기존 localStorage 저장과 텍스트 복사 기능으로 fallback합니다. 공유 링크는 `https://coms.kw.ac.kr/tier/shared/{slug}` 형식입니다.
+
+## 미디어 입력
+
+- 이미지 URL과 GIF URL은 그대로 티어 항목 미디어로 렌더링합니다.
+- YouTube URL은 embed URL로 변환하고, 티어표에서는 재생 배지와 함께 미리보기로 표시합니다.
+- 파일 업로드는 COMS 서버 파일 API에 저장한 뒤 `/api/files/{id}/inline` URL을 사용합니다.
+- 외부 API나 유료 API는 사용하지 않습니다.
 
 ## 배포 방법
 
@@ -108,6 +133,7 @@ src/
     EditTierPage.tsx
     ResultPage.tsx
     StatsPage.tsx
+    SharedTierPage.tsx
   components/
     Layout.tsx
     TierList.tsx
@@ -120,6 +146,8 @@ src/
     StatsTable.tsx
     EmptyState.tsx
   lib/
+    media.ts
+    miniApi.ts
     tierEngine.ts
     storage.ts
     sampleData.ts
@@ -134,20 +162,25 @@ src/
 - `coms-tier:results`: 저장된 `TierResult[]`
 - `coms-tier:draft:{templateId}`: 편집 중인 `TierPlacement[]`
 
-통계는 `TierResult[]`를 읽어 `lib/tierEngine.ts`의 `calculateTierStats`에서 계산합니다. 서버 DB로 옮길 때 이 계산 함수를 기준으로 API 응답을 설계하면 됩니다.
+통계는 `TierResult[]`를 읽어 `lib/tierEngine.ts`의 `calculateTierStats`에서 계산합니다. COMS 서버 저장소는 같은 payload를 `mini_app_documents`에 JSON으로 저장하므로, 서버 DB 통계로 옮길 때도 이 계산 함수를 기준으로 API 응답을 설계하면 됩니다.
+
+서버 저장 문서 개념:
+
+- `app`: `tier`
+- `contentType`: `template` 또는 `result`
+- `contentId`: 템플릿/결과 ID
+- `payload`: `TierTemplate` 또는 `TierResult`
+- `shared`: 공유 목록 노출 여부
+- `shareSlug`: 공유 상세 링크 식별자
 
 ## 향후 개선 아이디어
 
-- 로그인 연동
-- COMS 계정 기반 작성자 표시
-- 서버 DB 저장
-- 이미지 업로드
+- 서버 기반 전체 통계
 - 댓글 기능
 - 좋아요 기능
 - 결과 이미지 다운로드
 - 카카오톡/디스코드 공유
 - 관리자 신고/삭제 기능
 - 인기순 랭킹
-- coms-website 메인과 연결
 - 실제 COMS 회원만 작성 가능하게 제한
 - 관리자 페이지 추가

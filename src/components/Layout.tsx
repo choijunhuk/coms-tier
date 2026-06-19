@@ -1,12 +1,21 @@
 import { Layers3, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import type { ReactNode } from "react";
+import { getCurrentUser } from "../lib/miniApi";
+import type { ComsUser } from "../lib/miniApi";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
+  const [user, setUser] = useState<ComsUser | null>(null);
+
+  useEffect(() => {
+    getCurrentUser().then(setUser).catch(() => setUser(null));
+  }, []);
+
   return (
     <div className="min-h-screen bg-[var(--app-bg)] text-[var(--app-text)]">
       <header className="sticky top-0 z-40 border-b border-[var(--app-hairline)] bg-[color-mix(in_srgb,var(--app-surface)_88%,transparent)] backdrop-blur-xl">
@@ -24,6 +33,15 @@ export function Layout({ children }: LayoutProps) {
             <NavLink className={({ isActive }) => `coms-nav-link ${isActive ? "coms-nav-link-active" : ""}`} to="/create">
               <Plus size={15} /> 만들기
             </NavLink>
+            {user ? (
+              <span className="hidden rounded-full bg-[var(--app-accent-soft)] px-3 py-2 text-xs font-black text-[var(--app-accent-text)] sm:inline-flex">
+                {user.name}
+              </span>
+            ) : (
+              <a className="coms-nav-link" href="/login">
+                로그인
+              </a>
+            )}
           </div>
         </nav>
       </header>

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { TierForm } from "../components/TierForm";
+import { trySaveProfileDocument } from "../lib/miniApi";
 import { saveTemplate } from "../lib/storage";
 import type { TierTemplate } from "../types/tier";
 
@@ -10,6 +11,7 @@ export function CreateTierPage() {
 
   const handleSubmit = (template: TierTemplate): void => {
     const saved = saveTemplate(template);
+    void trySaveProfileDocument("template", template);
     setSaveError(saved ? "" : "브라우저 저장소에 저장하지 못했습니다. 지금 만든 티어표는 이 화면 흐름에서만 이어집니다.");
     navigate(`/edit/${template.id}`, { state: saved ? undefined : { template, storageWarning: true } });
   };

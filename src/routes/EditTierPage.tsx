@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { TierBoard } from "../components/TierBoard";
+import { trySaveProfileDocument } from "../lib/miniApi";
 import { findSampleTier } from "../lib/sampleData";
 import { clearDraftPlacements, getDraftPlacements, getStoredTemplates, saveDraftPlacements, saveResult } from "../lib/storage";
 import { generateTierResult } from "../lib/tierEngine";
@@ -40,6 +41,7 @@ export function EditTierPage() {
   const save = (): void => {
     const result = generateTierResult(template, placements);
     const saved = saveResult(result);
+    void trySaveProfileDocument("result", result);
     clearDraftPlacements(template.id);
     navigate(`/result/${result.id}`, { state: saved ? undefined : { result, storageWarning: true } });
   };

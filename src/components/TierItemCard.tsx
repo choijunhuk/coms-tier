@@ -1,6 +1,8 @@
 import { CSS } from "@dnd-kit/utilities";
 import { useDraggable } from "@dnd-kit/core";
+import { Play } from "lucide-react";
 import { useState } from "react";
+import { mediaFromInput } from "../lib/media";
 import type { TierItem } from "../types/tier";
 
 interface TierItemCardProps {
@@ -13,6 +15,7 @@ export function TierItemCard({ item, selected = false, onClick }: TierItemCardPr
   const [imageFailed, setImageFailed] = useState(false);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: item.id });
   const initial = item.name.trim().charAt(0) || "C";
+  const media = item.media ?? mediaFromInput(item.imageUrl);
 
   return (
     <button
@@ -25,7 +28,15 @@ export function TierItemCard({ item, selected = false, onClick }: TierItemCardPr
       {...attributes}
     >
       <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-[var(--app-accent-soft)] text-lg font-black text-[var(--app-accent-text)]">
-        {item.imageUrl && !imageFailed ? <img className="h-full w-full object-cover" src={item.imageUrl} alt="" onError={() => setImageFailed(true)} /> : initial}
+        {media?.type === "youtube" ? (
+          <span className="grid h-full w-full place-items-center bg-black text-white">
+            <Play size={18} fill="currentColor" />
+          </span>
+        ) : media && !imageFailed ? (
+          <img className="h-full w-full object-cover" src={media.url} alt="" onError={() => setImageFailed(true)} />
+        ) : (
+          initial
+        )}
       </div>
       <div className="min-w-0">
         <p className="break-words text-sm font-black leading-5 text-[var(--app-text)]">{item.name}</p>

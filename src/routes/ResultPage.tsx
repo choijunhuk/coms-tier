@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { ResultPreview } from "../components/ResultPreview";
+import { shareProfileDocument } from "../lib/miniApi";
 import { copyText, createResultShareText } from "../lib/share";
 import { getResultById } from "../lib/storage";
 
@@ -12,6 +13,7 @@ export function ResultPage() {
   const routeState = location.state as { result?: ReturnType<typeof getResultById>; storageWarning?: boolean } | null;
   const result = id ? getResultById(id) ?? routeState?.result : routeState?.result;
   const [copied, setCopied] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
   const shareText = useMemo(() => (result ? createResultShareText(result) : ""), [result]);
 
   if (!result) {
@@ -19,8 +21,17 @@ export function ResultPage() {
   }
 
   const copy = async (): Promise<void> => {
-    const ok = await copyText(shareText);
-    setCopied(ok);
+    try {
+      const shared = await shareProfileDocument("result", result);
+      const link = shared.shareUrl ? `${window.location.origin}${shared.shareUrl}` : "";
+      const ok = await copyText(link ? `${shareText}\n${link}` : shareText);
+      setCopied(ok);
+      setShareMessage(link ? `공유 링크가 생성되었습니다: ${link}` : "공유 텍스트를 복사했습니다.");
+    } catch {
+      const ok = await copyText(shareText);
+      setCopied(ok);
+      setShareMessage(ok ? "서버 공유는 실패했지만 공유 텍스트를 복사했습니다. 로그인 상태를 확인해주세요." : "공유에 실패했습니다.");
+    }
   };
 
   return (
@@ -46,7 +57,7 @@ export function ResultPage() {
           브라우저 저장소에 결과를 저장하지 못했습니다. 이 결과는 새로고침하면 사라질 수 있습니다.
         </p>
       ) : null}
-      {copied ? <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">공유 텍스트를 복사했습니다.</p> : null}
+      {copied || shareMessage ? <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">{shareMessage || "공유 텍스트를 복사했습니다."}</p> : null}
       <ResultPreview result={result} />
     </div>
   );

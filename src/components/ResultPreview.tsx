@@ -1,3 +1,5 @@
+import { Play } from "lucide-react";
+import { mediaFromInput } from "../lib/media";
 import type { TierResult } from "../types/tier";
 
 interface ResultPreviewProps {
@@ -20,6 +22,13 @@ export function ResultPreview({ result }: ResultPreviewProps) {
                 ) : (
                   items.map((item) => (
                     <div key={item.id} className="tier-result-chip">
+                      <span className="grid size-7 shrink-0 place-items-center overflow-hidden rounded bg-white/70">
+                        {item.media?.type === "youtube" || mediaFromInput(item.imageUrl)?.type === "youtube" ? (
+                          <Play size={13} fill="currentColor" />
+                        ) : item.media ?? mediaFromInput(item.imageUrl) ? (
+                          <img className="h-full w-full object-cover" src={(item.media ?? mediaFromInput(item.imageUrl))?.url} alt="" />
+                        ) : null}
+                      </span>
                       {item.name}
                     </div>
                   ))

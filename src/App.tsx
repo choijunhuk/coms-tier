@@ -4,6 +4,7 @@ import { CreateTierPage } from "./routes/CreateTierPage";
 import { EditTierPage } from "./routes/EditTierPage";
 import { HomePage } from "./routes/HomePage";
 import { ResultPage } from "./routes/ResultPage";
+import { SharedTierPage } from "./routes/SharedTierPage";
 import { StatsPage } from "./routes/StatsPage";
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/create" element={<CreateTierPage />} />
           <Route path="/edit/:id" element={<EditTierPage />} />
           <Route path="/result/:id" element={<ResultPage />} />
+          <Route path="/shared/:slug" element={<SharedTierPage />} />
           <Route path="/stats/:id" element={<StatsPage />} />
         </Routes>
       </Layout>

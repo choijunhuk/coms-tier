@@ -21,6 +21,11 @@ export interface TierItem {
   name: string;
   description: string;
   imageUrl?: string;
+  media?: {
+    type: "image" | "gif" | "youtube";
+    url: string;
+    embedUrl?: string;
+  };
   tags: string[];
 }
 
