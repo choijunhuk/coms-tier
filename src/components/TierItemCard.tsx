@@ -29,7 +29,7 @@ export function TierItemCard({ item, selected = false, onClick }: TierItemCardPr
     >
       <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-[var(--app-accent-soft)] text-lg font-black text-[var(--app-accent-text)]">
         {media?.type === "youtube" ? (
-          <span className="grid h-full w-full place-items-center bg-black text-white">
+          <span className="grid h-full w-full place-items-center bg-[#0f0f0f] text-white">
             <Play size={18} fill="currentColor" />
           </span>
         ) : media && !imageFailed ? (
