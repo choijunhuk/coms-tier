@@ -53,11 +53,11 @@ export function ResultPage() {
         </div>
       </header>
       {routeState?.storageWarning ? (
-        <p className="rounded-lg bg-amber-50 px-4 py-3 text-sm font-bold text-amber-700">
+        <p className="coms-alert-warn">
           브라우저 저장소에 결과를 저장하지 못했습니다. 이 결과는 새로고침하면 사라질 수 있습니다.
         </p>
       ) : null}
-      {copied || shareMessage ? <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">{shareMessage || "공유 텍스트를 복사했습니다."}</p> : null}
+      {copied || shareMessage ? <p className="coms-alert-ok">{shareMessage || "공유 텍스트를 복사했습니다."}</p> : null}
       <ResultPreview result={result} />
     </div>
   );

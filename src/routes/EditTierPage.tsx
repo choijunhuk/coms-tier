@@ -56,7 +56,7 @@ export function EditTierPage() {
         </p>
       </header>
       {storageWarning ? (
-        <p className="rounded-lg bg-amber-50 px-4 py-3 text-sm font-bold text-amber-700">
+        <p className="coms-alert-warn">
           {storageWarning}
           <button type="button" className="ml-2 underline" onClick={() => setStorageWarning("")}>
             닫기

@@ -25,7 +25,7 @@ export function CreateTierPage() {
           기본 S/A/B/C/D 티어에서 시작하고, 색상과 이름을 바꿔 COMS 주제에 맞게 조정할 수 있습니다.
         </p>
       </header>
-      {saveError ? <p className="rounded-lg bg-amber-50 px-4 py-3 text-sm font-bold text-amber-700">{saveError}</p> : null}
+      {saveError ? <p className="coms-alert-warn">{saveError}</p> : null}
       <TierForm onSubmit={handleSubmit} />
     </div>
   );

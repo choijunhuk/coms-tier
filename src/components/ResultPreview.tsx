@@ -20,18 +20,30 @@ export function ResultPreview({ result }: ResultPreviewProps) {
                 {items.length === 0 ? (
                   <p className="px-2 py-3 text-sm font-semibold text-[var(--app-subtle)]">비어 있음</p>
                 ) : (
-                  items.map((item) => (
-                    <div key={item.id} className="tier-result-chip">
-                      <span className="grid size-7 shrink-0 place-items-center overflow-hidden rounded bg-white/70">
-                        {item.media?.type === "youtube" || mediaFromInput(item.imageUrl)?.type === "youtube" ? (
-                          <Play size={13} fill="currentColor" />
-                        ) : item.media ?? mediaFromInput(item.imageUrl) ? (
-                          <img className="h-full w-full object-cover" src={(item.media ?? mediaFromInput(item.imageUrl))?.url} alt="" />
-                        ) : null}
-                      </span>
-                      {item.name}
-                    </div>
-                  ))
+                  items.map((item) => {
+                    const media = item.media ?? mediaFromInput(item.imageUrl);
+                    const isYt = media?.type === "youtube" || mediaFromInput(item.imageUrl)?.type === "youtube";
+                    const hasMedia = Boolean(media ?? mediaFromInput(item.imageUrl));
+
+                    return (
+                      <div key={item.id} className="tier-result-chip">
+                        {(isYt || hasMedia) && (
+                          <span className="tier-result-chip-thumb">
+                            {isYt ? (
+                              <Play size={10} fill="currentColor" className="text-[var(--app-text)]" />
+                            ) : (
+                              <img
+                                className="h-full w-full object-cover"
+                                src={(media ?? mediaFromInput(item.imageUrl))?.url}
+                                alt=""
+                              />
+                            )}
+                          </span>
+                        )}
+                        {item.name}
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </div>

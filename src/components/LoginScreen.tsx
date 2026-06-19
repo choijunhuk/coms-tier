@@ -35,7 +35,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     <main className="grid min-h-screen bg-[var(--app-bg)] px-4 py-8 text-[var(--app-text)]">
       <section className="mx-auto grid w-full max-w-5xl gap-6 self-center lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
         <div className="space-y-5">
-          <span className="grid size-14 place-items-center rounded-lg bg-[var(--app-accent)] text-white shadow-[0_16px_40px_rgba(0,113,227,0.24)]">
+          <span className="accent-icon grid size-14 place-items-center rounded-lg bg-[var(--app-accent)]">
             <Layers3 size={28} />
           </span>
           <div>
@@ -64,7 +64,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             <input type="checkbox" checked={credentials.rememberMe} onChange={(event) => setCredentials((current) => ({ ...current, rememberMe: event.target.checked }))} />
             로그인 유지
           </label>
-          {error ? <p className="rounded-lg bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">{error}</p> : null}
+          {error ? <p className="coms-alert-error">{error}</p> : null}
           <button type="submit" className="coms-button-primary min-h-12 w-full" disabled={loading}>
             <LogIn size={16} /> {loading ? "로그인 중..." : "로그인"}
           </button>
