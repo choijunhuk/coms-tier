@@ -8,6 +8,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOST: ${{ secrets.SSH_HOST }}
+      DEPLOY_USER: ${{ secrets.SSH_USER || 'kw' }}
+      DEPLOY_PORT: ${{ secrets.SSH_PORT || '22' }}
 
     steps:
       - name: Checkout
@@ -33,12 +37,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          if [ -z "$DEPLOY_HOST" ] || [ ! -s ~/.ssh/deploy_key ]; then
+            echo "Missing required SSH_HOST or SSH_KEY GitHub secret"
+            exit 1
+          fi
+          ssh-keyscan -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts
 
       - name: Deploy
         run: |
-          ssh -i ~/.ssh/deploy_key -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}" "mkdir -p /var/www/coms-tier"
-          rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }}" dist/ "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/var/www/coms-tier/
+          ssh -i ~/.ssh/deploy_key -p "$DEPLOY_PORT" "$DEPLOY_USER"@"$DEPLOY_HOST" "mkdir -p /var/www/coms-tier"
+          rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key -p $DEPLOY_PORT" dist/ "$DEPLOY_USER"@"$DEPLOY_HOST":/var/www/coms-tier/
 
       - name: Done
         run: echo "COMS Tier deployed to /var/www/coms-tier"
