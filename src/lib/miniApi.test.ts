@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createDefaultRows } from "./tierEngine";
-import { toMiniDocumentRequest, uploadMediaFile } from "./miniApi";
+import { getCurrentUser, loginComsUser, logoutComsUser, toMiniDocumentRequest, uploadMediaFile } from "./miniApi";
 import type { TierResult } from "../types/tier";
 
 const rows = createDefaultRows();
@@ -43,5 +43,53 @@ describe("tier mini API helpers", () => {
 
     expect(url).toBe("/api/files/42/inline");
     expect(fetchMock).toHaveBeenCalledWith("/api/files", expect.objectContaining({ method: "POST", credentials: "include" }));
+  });
+
+  it("logs in through the COMS auth API inside the app", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ studentId: "20250001", name: "홍길동", role: "USER" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = await loginComsUser({ identifier: "20250001", password: "pw", rememberMe: true });
+
+    expect(user).toEqual({ studentId: "20250001", name: "홍길동", role: "USER" });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/auth/login",
+      expect.objectContaining({
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({ identifier: "20250001", password: "pw", rememberMe: true }),
+      }),
+    );
+  });
+
+  it("logs out through the COMS auth API inside the app", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await logoutComsUser();
+
+    expect(fetchMock).toHaveBeenCalledWith("/api/auth/logout", expect.objectContaining({ method: "POST", credentials: "include" }));
+  });
+
+  it("refreshes an expired session before returning the current user", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({ ok: true })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ studentId: "20250001", name: "홍길동" }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = await getCurrentUser();
+
+    expect(user).toEqual({ studentId: "20250001", name: "홍길동" });
+    expect(fetchMock).toHaveBeenNthCalledWith(1, "/api/auth/me", { credentials: "include" });
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "/api/auth/refresh", { method: "POST", credentials: "include" });
+    expect(fetchMock).toHaveBeenNthCalledWith(3, "/api/auth/me", { credentials: "include" });
   });
 });

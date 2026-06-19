@@ -11,6 +11,7 @@ COMS 동아리 내부에서 여러 주제를 등급별로 나눠보고 공유할
 - 편집: 미배치 항목, 티어 행, PC 드래그 앤 드롭, 모바일 터치 후 티어 선택, 미배치로 되돌리기, 초기화, 결과 저장
 - 결과: 완성된 티어표, 공유 텍스트, 공유 링크 생성, 다시 수정하기, 새로 만들기
 - COMS 계정 저장: 로그인 상태에서는 만든 티어표와 결과를 내 프로필 저장소에 저장
+- 앱 내부 로그인/로그아웃: 헤더에서 COMS 계정으로 바로 로그인하고 로그아웃
 - 공유 모음: 공유한 티어표와 결과를 `/tier/shared/:slug` 링크와 메인 공유 목록에서 조회
 - 미디어: 이미지 파일 업로드, GIF 파일 업로드, 이미지/GIF URL, YouTube 링크 미리보기 지원
 - 통계: localStorage 기반 S 티어 배치 횟수, A 티어 배치 횟수, 평균 티어 점수, 가장 많이 배치된 티어
@@ -50,7 +51,10 @@ npm run typecheck
 
 이 앱은 프론트 단독으로도 동작하지만, `coms-website` 백엔드가 함께 배포되어 있으면 같은 도메인의 COMS 로그인 세션을 사용합니다.
 
+- 로그인: `POST /api/auth/login`
+- 로그아웃: `POST /api/auth/logout`
 - 로그인 사용자 확인: `GET /api/auth/me`
+- 만료 세션 복구: `POST /api/auth/refresh`
 - 내 프로필 저장: `PUT /api/mini-apps/tier/profile/{template|result}/{id}`
 - 내 저장 목록: `GET /api/mini-apps/tier/profile`
 - 공유 발행: `POST /api/mini-apps/tier/profile/{template|result}/{id}/share`
@@ -58,7 +62,7 @@ npm run typecheck
 - 공유 상세: `GET /api/mini-apps/tier/shared/{slug}`
 - 이미지/GIF 업로드: `POST /api/files`
 
-로그인하지 않았거나 API를 사용할 수 없는 환경에서는 기존 localStorage 저장과 텍스트 복사 기능으로 fallback합니다. 공유 링크는 `https://coms.kw.ac.kr/tier/shared/{slug}` 형식입니다.
+로그인하지 않았거나 API를 사용할 수 없는 환경에서는 기존 localStorage 저장과 텍스트 복사 기능으로 fallback합니다. 로그인과 로그아웃은 `/tier/` 앱 헤더에서 처리하며, 공유 링크는 `https://coms.kw.ac.kr/tier/shared/{slug}` 형식입니다.
 
 ## 미디어 입력
 

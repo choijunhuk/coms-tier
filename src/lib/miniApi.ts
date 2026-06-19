@@ -6,6 +6,12 @@ export interface ComsUser {
   role?: string;
 }
 
+export interface LoginCredentials {
+  identifier: string;
+  password: string;
+  rememberMe: boolean;
+}
+
 export interface MiniDocumentRequest<TPayload> {
   title: string;
   description: string;
@@ -41,6 +47,25 @@ const apiUrl = (path: string): string => `${API_BASE}${path}`;
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
+const userFromPayload = (value: unknown): ComsUser | null => {
+  if (!isRecord(value) || typeof value.studentId !== "string" || typeof value.name !== "string") {
+    return null;
+  }
+  return {
+    studentId: value.studentId,
+    name: value.name,
+    role: typeof value.role === "string" ? value.role : undefined,
+  };
+};
+
+const readApiError = async (response: Response, fallback: string): Promise<string> => {
+  const data = (await response.json().catch(() => null)) as unknown;
+  if (isRecord(data) && typeof data.message === "string" && data.message.trim()) {
+    return data.message;
+  }
+  return fallback;
+};
+
 const requestJson = async <T>(path: string, options: RequestInit = {}): Promise<T> => {
   const response = await fetch(apiUrl(path), {
     ...options,
@@ -58,11 +83,43 @@ const requestJson = async <T>(path: string, options: RequestInit = {}): Promise<
 };
 
 export const getCurrentUser = async (): Promise<ComsUser | null> => {
-  const response = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
+  let response = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
+  if (!response.ok && (response.status === 401 || response.status === 403)) {
+    const refreshed = await fetch(apiUrl("/api/auth/refresh"), { method: "POST", credentials: "include" });
+    if (refreshed.ok) {
+      response = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
+    }
+  }
   if (!response.ok) {
     return null;
   }
-  return response.json() as Promise<ComsUser>;
+  const data = (await response.json().catch(() => null)) as unknown;
+  return userFromPayload(data);
+};
+
+export const loginComsUser = async (credentials: LoginCredentials): Promise<ComsUser> => {
+  const response = await fetch(apiUrl("/api/auth/login"), {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+  });
+  if (!response.ok) {
+    throw new Error(await readApiError(response, "로그인에 실패했습니다."));
+  }
+  const data = (await response.json().catch(() => null)) as unknown;
+  const user = userFromPayload(data) ?? (await getCurrentUser());
+  if (!user) {
+    throw new Error("로그인 후 사용자 정보를 불러오지 못했습니다.");
+  }
+  return user;
+};
+
+export const logoutComsUser = async (): Promise<void> => {
+  const response = await fetch(apiUrl("/api/auth/logout"), { method: "POST", credentials: "include" });
+  if (!response.ok) {
+    throw new Error(await readApiError(response, "로그아웃에 실패했습니다."));
+  }
 };
 
 const topTierSummary = (result: TierResult): string => {
