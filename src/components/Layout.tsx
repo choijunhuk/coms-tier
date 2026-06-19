@@ -17,6 +17,7 @@ export function Layout({ children }: LayoutProps) {
   const [checking, setChecking] = useState(true);
   const [authLoading, setAuthLoading] = useState(false);
   const { resolvedTheme, toggleTheme } = useTheme();
+  const logoUrl = `${import.meta.env.BASE_URL}logo.png`;
 
   useEffect(() => {
     let mounted = true;
@@ -56,9 +57,7 @@ export function Layout({ children }: LayoutProps) {
         >
           <nav className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:px-6">
             <Link to="/" className="flex min-w-0 items-center gap-2 font-black">
-              <span className="accent-icon grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--app-accent)]">
-                <Layers3 size={18} />
-              </span>
+              <img src={logoUrl} alt="" className="size-9 shrink-0 object-contain" draggable={false} />
               <span className="truncate">COMS 티어표</span>
             </Link>
             <div className="ml-auto flex items-center gap-2">
